@@ -1,23 +1,30 @@
+
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { AdministratorsService } from './administrators.servicie';
 
 
 @Controller('administrators')
 export class AdministratorsController {
 
+  //inyeccion de dependencias:
+  //Inyectar un componente para uso de otro sin tener que instanciarlo
+  constructor(private readonly administratorsService: AdministratorsService ) {}
+
+
   @Post()
-  create() {
-    return "Aqui se van a crear los administrators";
+  create(@Body() body) {
+    return this.administratorsService.create(body)
   }
 
   @Get()
   findAll() {
-    return "Aqui se van a consultar todos los adminitrators";
+    return this.administratorsService.findAll();
   }
 
   //Consultar un resource por id un
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return `Aqui se consulta el administrator cuyo id es: ${id}`
+  findOne(@Param('id') id: number) {
+    return this.administratorsService.findOne(+id);
   }
 
 
@@ -28,6 +35,9 @@ export class AdministratorsController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return "Aqui se borrará el administrator con id:" + id
+    return {
+      "success" : true,
+      "mensaje" : this.administratorsService.remove(+id)
+    }
   }
 }

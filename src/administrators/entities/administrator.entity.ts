@@ -1,1 +1,7 @@
-export class Administrator {}
+export class Administrator {
+
+    id: number;
+    name: string;
+    description: string;
+    
+}
