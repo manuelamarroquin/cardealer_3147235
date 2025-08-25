@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Univote_3147235",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

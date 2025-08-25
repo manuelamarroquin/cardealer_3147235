@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+//Modelos del proyecto 
+
+model administrador {
+  id_admin          Int      @id @default(autoincrement())
+  nombre_admin      String   @db.VarChar(30)
+  apellido_admin    String   @db.VarChar(30)
+  tipo_doc_admin   String    @db.VarChar(50)
+  num_doc_admin     Int      
+  correo_admin      String   @db.VarChar(50)
+  contrasena_admin  String   @db.VarChar(50)
+  elections elections[]
+
+}
+
+model voters {
+  id_voter        Int      @id @default(autoincrement())
+  nombre_voter    String   @db.VarChar(30)
+  apellido_voter  String   @db.VarChar(30)
+  tipo_doc_voter  String   @db.VarChar(50)
+  num_doc_voter   Int      
+  correo_voter    String   @db.VarChar(50)
+  estado_voter    String   @db.VarChar(30)
+  contrasena_voter String  @db.VarChar(30)
+}
+
+model elections{
+  id_election     Int      @id @default(autoincrement())
+  nombre_election String   @db.VarChar(50)
+  fecha_inicio    DateTime @db.Date
+  fecha_fin       DateTime @db.Date
+  estado_election String   @db.VarChar(30)
+  //campo de la clave foranea
+  admin_id       Int
+  //relacion con el modelo administrador
+  administrador  administrador @relation(fields: [admin_id], references: [id_admin])
+}
+
+model candidates{
+  id_candidate    Int      @id @default(autoincrement())
+  nombre_candidate String  @db.VarChar(30)
+  apellido_candidate String @db.VarChar(30)
+  tipo_doc_candidate String @db.VarChar(50)
+  num_doc_candidate Int     
+  correo_candidate String   @db.VarChar(50)
+  estado_candidate String   @db.VarChar(30)
+  foto_candidate String   @db.VarChar(100)
+}
+
+model votes{
+  id_vote        Int      @id @default(autoincrement())
+  fecha_vote   DateTime @db.Date
+  hora_vote   DateTime  @db.Time
+}
+
+model proposal{
+  id_proposal    Int      @id @default(autoincrement())
+  titulo_proposal String @db.VarChar(100)
+  descripcion_proposal String @db.VarChar(500)
+  estado_proposal String @db.VarChar(30)
+}
+
+model career{
+  id_career      Int      @id @default(autoincrement())
+  nombre_career  String   @db.VarChar(60)
+  facultad_career String  @db.VarChar(60)
+}
+
+model results{
+  id_result      Int      @id @default(autoincrement())
+  total_votes    Int
+}
+
+model role{
+  id_role        Int      @id @default(autoincrement())
+  nombre_role    String   @db.VarChar(30)
+}
