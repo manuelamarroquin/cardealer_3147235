@@ -1,6 +1,7 @@
 
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { AdministratorsService } from './administrators.servicie';
+import { CreateAdministratorDto } from './dto/create-administrator.dto';
 
 
 @Controller('administrators')
@@ -10,10 +11,10 @@ export class AdministratorsController {
   //Inyectar un componente para uso de otro sin tener que instanciarlo
   constructor(private readonly administratorsService: AdministratorsService ) {}
 
-
+  //Crear un Administrador
   @Post()
-  create(@Body() body) {
-    return this.administratorsService.create(body)
+  create(@Body() newAdministrator: CreateAdministratorDto) {
+    return this.administratorsService.create(newAdministrator);
   }
 
   @Get()

@@ -1,3 +1,4 @@
+// candidate.controller.ts
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { CandidatesService } from './candidates.service';
 import { CreateCandidateDto } from './dto/create-candidate.dto';
@@ -8,7 +9,7 @@ export class CandidatesController {
   constructor(private readonly candidatesService: CandidatesService) {}
 
   @Post()
-  create(@Body() createCandidateDto: any) {
+  create(@Body() createCandidateDto: CreateCandidateDto) { // ← Usa el DTO correcto
     return this.candidatesService.create(createCandidateDto);
   }
 
