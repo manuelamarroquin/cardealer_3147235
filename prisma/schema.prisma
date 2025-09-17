@@ -7,8 +7,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 //Modelos del proyecto
@@ -29,8 +29,8 @@ model Voter {
   nombre_voter      String
   apellido_voter    String
   tipo_doc_voter    String
-  num_doc_voter     BigInt
-  correo_voter      String
+  num_doc_voter     BigInt    @unique
+  correo_voter      String    @unique
   estado_voter      String
   contrasena_voter  String
   

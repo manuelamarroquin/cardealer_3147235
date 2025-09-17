@@ -1,49 +1,91 @@
-import { PrismaService } from 'src/prisma/prisma.service';
-import { Administrator } from './entities/administrator.entity';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateAdministratorDto } from './dto/create-administrator.dto';
+import { UpdateAdministratorDto } from './dto/update-administrator.dto';
 
 @Injectable()
 export class AdministratorsService {
+    constructor(private prisma: PrismaService) { }
 
-    constructor(
-        private prisma: PrismaService
-    ){}
-    //Private: Solo se puede utilizar al interior de la clase con this
-
-
-    //Metodos:
-    //CRUD: Select * from administrators 
-    //This: acccede algo private en la clase 
-    findAll(){
-        return this.prisma.administrador.findMany()
-    }
-    
-    //Buscar el administrators por id:
-
-    async findOne(id:number){
-        return await this.prisma.administrador.findFirst({
-            where: {id_admin:id}
-        })
+    // Método para obtener todos los administradores
+    findAll() {
+        return this.prisma.administrador.findMany({
+            include: {
+                elections: true // Incluir elecciones relacionadas
+            }
+        });
     }
 
-    //Añadir al arreglo de administrator, el administrador que esta llegando por el body
-    async create (newAdministrator: CreateAdministratorDto){
+    // Buscar administrador por id
+    async findOne(id: number) {
+        const admin = await this.prisma.administrador.findUnique({
+            where: { id_admin: id },
+            include: {
+                elections: true
+            }
+        });
+
+        if (!admin) {
+            throw new NotFoundException(`Administrador con ID ${id} no encontrado`);
+        }
+
+        return admin;
+    }
+
+    // Crear nuevo administrador
+    async create(newAdministrator: CreateAdministratorDto) {
+        // Verificar si el email ya existe
+        const existingAdmin = await this.prisma.administrador.findFirst({
+            where: { correo_admin: newAdministrator.correo_admin }
+        });
+
+        if (existingAdmin) {
+            throw new ConflictException('El correo electrónico ya está registrado');
+        }
+
         return await this.prisma.administrador.create({
-            data:{
+            data: {
                 nombre_admin: newAdministrator.nombre_admin,
                 apellido_admin: newAdministrator.apellido_admin,
                 tipo_doc_admin: newAdministrator.tipo_doc_admin,
                 num_doc_admin: newAdministrator.num_doc_admin,
                 correo_admin: newAdministrator.correo_admin,
                 contrasena_admin: newAdministrator.contrasena_admin
+            },
+            include: {
+                elections: true
             }
-        })
+        });
     }
 
-    //Eliminar un elemento del arreglo por id
-    remove(id:number){
+    // Actualizar administrador
+    async update(id: number, updateAdministratorDto: UpdateAdministratorDto) {
+        try {
+            return await this.prisma.administrador.update({
+                where: { id_admin: id },
+                data: updateAdministratorDto,
+                include: {
+                    elections: true
+                }
+            });
+        } catch (error) {
+            throw new NotFoundException(`Administrador con ID ${id} no encontrado`);
+        }
+    }
 
+    // Eliminar administrador
+    async remove(id: number) {
+        try {
+            await this.prisma.administrador.delete({
+                where: { id_admin: id }
+            });
+
+            return {
+                success: true,
+                message: `Administrador con ID ${id} eliminado correctamente`
+            };
+        } catch (error) {
+            throw new NotFoundException(`Administrador con ID ${id} no encontrado`);
+        }
     }
 }
-
